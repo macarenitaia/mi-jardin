@@ -1,24 +1,16 @@
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { LightMeter } from '@/features/light-meter/components/LightMeter'
 
 export default async function LightPage() {
+  // Demo mode: usar un userId de prueba
+  const demoUserId = '00000000-0000-0000-0000-000000000000'
   const supabase = await createClient()
 
-  // Verificar autenticación
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
-  // Obtener plantas del usuario para el selector
+  // Obtener plantas del usuario demo para el selector
   const { data: plants } = await supabase
     .from('plants')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', demoUserId)
     .order('name')
 
   return (
@@ -33,7 +25,7 @@ export default async function LightPage() {
         </div>
       </div>
 
-      <LightMeter userId={user.id} plants={plants || []} />
+      <LightMeter userId={demoUserId} plants={plants || []} />
     </div>
   )
 }

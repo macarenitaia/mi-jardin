@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Droplets, Leaf, Edit3 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { plantsService } from '@/features/garden-library/services/plantsService'
 import { useWateringCalculator } from '@/features/watering-calculator/hooks/useWateringCalculator'
 import { WateringResultCard } from '@/features/watering-calculator/components/WateringResultCard'
@@ -17,25 +16,10 @@ const POT_SIZES = ['pequeño', 'mediano', 'grande', 'muy grande']
 const POT_SUBSTRATES = ['universal', 'cactus', 'turba', 'orquídeas', 'arena']
 
 export default function WateringPage() {
-  const [userId, setUserId] = useState<string | null>(null)
+  // Demo mode: usar un userId de prueba
+  const demoUserId = '00000000-0000-0000-0000-000000000000'
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null)
-    })
-  }, [])
-
-  if (!userId) {
-    return (
-      <div className="p-6 lg:p-8 space-y-4">
-        <div className="h-8 bg-white/[0.08] rounded-full w-64 animate-pulse" />
-        <div className="h-48 bg-white/[0.05] rounded-3xl animate-pulse" />
-      </div>
-    )
-  }
-
-  return <WateringContent userId={userId} />
+  return <WateringContent userId={demoUserId} />
 }
 
 function WateringContent({ userId }: { userId: string }) {

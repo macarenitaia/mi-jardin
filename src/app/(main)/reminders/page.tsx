@@ -1,7 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Bell } from 'lucide-react'
 import { useReminders } from '@/features/reminders/hooks/useReminders'
 import { ReminderCard } from '@/features/reminders/components/ReminderCard'
@@ -24,27 +22,10 @@ function ReminderSkeleton() {
 }
 
 export default function RemindersPage() {
-  const [userId, setUserId] = useState<string | null>(null)
+  // Demo mode: usar un userId de prueba
+  const demoUserId = '00000000-0000-0000-0000-000000000000'
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null)
-    })
-  }, [])
-
-  if (!userId) {
-    return (
-      <div className="p-6 lg:p-8 space-y-4">
-        <div className="h-8 bg-white/[0.08] rounded-full w-48 animate-pulse" />
-        {Array.from({ length: 3 }).map((_, i) => (
-          <ReminderSkeleton key={i} />
-        ))}
-      </div>
-    )
-  }
-
-  return <RemindersContent userId={userId} />
+  return <RemindersContent userId={demoUserId} />
 }
 
 function RemindersContent({ userId }: { userId: string }) {
