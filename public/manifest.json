@@ -1,0 +1,42 @@
+{
+  "name": "Mi Jardín",
+  "short_name": "Mi Jardín",
+  "description": "Tu jardín inteligente — identifica plantas, diagnostica enfermedades y cuida tu jardín con IA",
+  "start_url": "/plants",
+  "display": "standalone",
+  "background_color": "#052e16",
+  "theme_color": "#052e16",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "utilities"],
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Identificar planta",
+      "short_name": "Identificar",
+      "description": "Identifica una planta por foto",
+      "url": "/identify",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "El Jardinero",
+      "short_name": "Jardinero",
+      "description": "Habla con el asistente IA",
+      "url": "/jardinero",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
