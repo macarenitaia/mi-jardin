@@ -14,7 +14,7 @@ export function useJardinero(userId: string) {
       id: 'welcome',
       role: 'assistant',
       content:
-        '¡Hola! Soy El Jardinero 🌿 Tu asistente personal de jardín. ¿En qué puedo ayudarte hoy? Puedo decirte cuándo regar tus plantas, registrar cuidados o darte consejos personalizados.',
+        '¡Hola! Soy El Jardinero 🌿 Tu asistente personal de jardín. ¿En qué puedo ayudarte hoy?',
     },
   ])
   const [input, setInput] = useState('')
@@ -32,6 +32,7 @@ export function useJardinero(userId: string) {
     }
 
     setMessages((prev) => [...prev, userMessage])
+    const currentMessages = [...messages, userMessage]
     setInput('')
     setStatus('submitted')
     setError(null)
@@ -41,7 +42,7 @@ export function useJardinero(userId: string) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
+          messages: currentMessages.map((m) => ({
             role: m.role,
             content: m.content,
           })),
@@ -53,31 +54,43 @@ export function useJardinero(userId: string) {
         throw new Error('Error al enviar mensaje')
       }
 
-      setStatus('streaming')
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-      let assistantContent = ''
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: '',
+      if (!response.body) {
+        throw new Error('No response body')
       }
 
-      setMessages((prev) => [...prev, assistantMessage])
+      setStatus('streaming')
 
-      while (reader) {
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let accumulatedText = ''
+
+      const assistantId = (Date.now() + 1).toString()
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantId,
+          role: 'assistant',
+          content: '',
+        },
+      ])
+
+      while (true) {
         const { done, value } = await reader.read()
+
         if (done) break
 
-        const chunk = decoder.decode(value)
-        assistantContent += chunk
+        const chunk = decoder.decode(value, { stream: true })
+        accumulatedText += chunk
 
         setMessages((prev) => {
           const newMessages = [...prev]
-          newMessages[newMessages.length - 1] = {
-            ...assistantMessage,
-            content: assistantContent,
+          const lastIndex = newMessages.length - 1
+          if (newMessages[lastIndex]?.id === assistantId) {
+            newMessages[lastIndex] = {
+              id: assistantId,
+              role: 'assistant',
+              content: accumulatedText,
+            }
           }
           return newMessages
         })
@@ -85,8 +98,18 @@ export function useJardinero(userId: string) {
 
       setStatus('idle')
     } catch (err) {
+      console.error('Error in chat:', err)
       setError(err as Error)
       setStatus('idle')
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          role: 'assistant',
+          content: 'Lo siento, hubo un error. ¿Puedes intentarlo de nuevo?',
+        },
+      ])
     }
   }
 
