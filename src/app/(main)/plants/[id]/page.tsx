@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { PlantProfileClient } from '@/features/plant-profile/components/PlantProfileClient'
 
 interface PlantProfilePageProps {
@@ -8,14 +6,8 @@ interface PlantProfilePageProps {
 
 export default async function PlantProfilePage({ params }: PlantProfilePageProps) {
   const { id } = await params
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Demo mode: usar un userId de prueba
+  const demoUserId = '00000000-0000-0000-0000-000000000000'
 
-  if (!user) {
-    redirect('/login')
-  }
-
-  return <PlantProfileClient plantId={id} userId={user.id} />
+  return <PlantProfileClient plantId={id} userId={demoUserId} />
 }

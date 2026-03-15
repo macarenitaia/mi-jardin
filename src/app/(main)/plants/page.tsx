@@ -1,16 +1,8 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { GardenGrid } from '@/features/garden-library/components/GardenGrid'
 
 export default async function PlantsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
+  // Demo mode: usar un userId de prueba
+  const demoUserId = '00000000-0000-0000-0000-000000000000'
 
   return (
     <div className="p-6 lg:p-8">
@@ -21,7 +13,7 @@ export default async function PlantsPage() {
       </div>
 
       {/* Grid */}
-      <GardenGrid userId={user.id} />
+      <GardenGrid userId={demoUserId} />
     </div>
   )
 }
