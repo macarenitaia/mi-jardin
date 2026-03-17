@@ -48,7 +48,8 @@ export async function POST(request: Request) {
           description:
             'Obtiene la lista de todas las plantas del usuario con su información (nombre, especie, frecuencia de riego, última vez que se regó, etc.)',
           parameters: z.object({}),
-          execute: async () => {
+          // @ts-expect-error: Vercel AI SDK overloads mismatch with empty zod object
+          execute: async (_args) => {
             console.log('[TOOL] getMyPlants called for user:', userId)
 
             const { data: plants, error } = await supabase
@@ -71,7 +72,8 @@ export async function POST(request: Request) {
           description:
             'Obtiene las plantas que necesitan ser regadas HOY basándose en la última vez que fueron regadas y su frecuencia de riego configurada',
           parameters: z.object({}),
-          execute: async () => {
+          // @ts-expect-error: Vercel AI SDK overloads mismatch with empty zod object
+          execute: async (_args) => {
             console.log('[TOOL] getPlantsNeedingWater called for user:', userId)
 
             // Get plants with their last watering
@@ -139,6 +141,7 @@ export async function POST(request: Request) {
           parameters: z.object({
             plantName: z.string().describe('Nombre de la planta'),
           }),
+          // @ts-expect-error: Vercel AI SDK overloads mismatch with zod typing
           execute: async ({ plantName }) => {
             console.log('[TOOL] getCareHistory called for plant:', plantName)
 
