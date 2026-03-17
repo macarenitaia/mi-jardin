@@ -36,13 +36,13 @@ export function JardineroMessage({ message }: JardineroMessageProps) {
         )
       : []
 
-  // Get text content from message parts
-  const textContent = 'parts' in message && Array.isArray(message.parts)
+  // Get text content from message parts or fallback to content property
+  const textContent = 'parts' in message && Array.isArray(message.parts) && message.parts.length > 0
     ? message.parts
         .filter((p: unknown) => typeof p === 'object' && p !== null && 'type' in p && p.type === 'text')
         .map((p: unknown) => (p as { text: string }).text)
         .join('')
-    : ''
+    : 'content' in message ? (message as any).content || '' : ''
 
   if (isUser) {
     return (
