@@ -41,6 +41,9 @@ interface AddPlantModalProps {
 const inputClass =
   'w-full bg-white/[0.06] border border-white/[0.12] rounded-xl px-4 py-2.5 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-emerald-400/50 focus:bg-white/[0.08] transition-all duration-200'
 
+const selectClass =
+  'w-full bg-white/[0.06] border border-white/[0.12] rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400/50 focus:bg-white/[0.08] transition-all duration-200 [&>option]:bg-gray-900 [&>option]:text-white'
+
 const labelClass = 'block text-white/60 text-xs font-medium mb-1.5 uppercase tracking-wide'
 
 export function AddPlantModal({ onClose, onAdd }: AddPlantModalProps) {
@@ -203,7 +206,7 @@ export function AddPlantModal({ onClose, onAdd }: AddPlantModalProps) {
                 name="pot_size"
                 value={form.pot_size}
                 onChange={handleChange}
-                className={inputClass}
+                className={selectClass}
               >
                 <option value="">Selecciona tamaño</option>
                 <option value="pequeño">Pequeño (hasta 15cm)</option>

@@ -76,7 +76,10 @@ export default function IdentifyPage() {
           {/* Error */}
           {error && (
             <GlassCard className="p-4 border-red-400/20 bg-red-500/[0.08]">
-              <p className="text-red-300 text-sm text-center">{error}</p>
+              <div className="text-center">
+                <p className="text-red-300 text-sm font-medium mb-1">⚠️ No se pudo identificar</p>
+                <p className="text-red-200/70 text-xs">{error}</p>
+              </div>
             </GlassCard>
           )}
 
