@@ -83,7 +83,8 @@ export async function POST(request: Request) {
     console.log('[IDENTIFY API] Success! Identified:', object.commonName)
     return Response.json({ result: object })
   } catch (error) {
-    console.error('[IDENTIFY API] ERROR:', error)
+    console.error('[IDENTIFY API] ERROR CAUGHT:')
+    console.error(error)
 
     // More detailed error message
     let errorMessage = 'No se pudo identificar la planta. Intenta con otra foto.'
@@ -106,3 +107,4 @@ export async function POST(request: Request) {
     return Response.json({ error: errorMessage }, { status: 500 })
   }
 }
+
