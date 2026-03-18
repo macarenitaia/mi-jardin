@@ -32,18 +32,24 @@ export async function POST(request: Request) {
       return Response.json({ error: 'imageBase64 es requerido' }, { status: 400 })
     }
 
-    let { imageBase64 } = parsed.data
+    const { imageBase64 } = parsed.data
     console.log('[IDENTIFY API] Image received, base64 length:', imageBase64.length)
 
-    // Remove data URL prefix if present (e.g., "data:image/png;base64,")
-    // Vercel AI SDK requires pure base64, not data URLs
+    // Extract mime type and pure base64 from data URL
+    // e.g. "data:image/jpeg;base64,..." → mimeType='image/jpeg', pureBase64='...'
+    let pureBase64 = imageBase64
+    let mimeType = 'image/jpeg' // default
     if (imageBase64.startsWith('data:')) {
-      const base64Index = imageBase64.indexOf('base64,')
-      if (base64Index !== -1) {
-        imageBase64 = imageBase64.substring(base64Index + 7)
-        console.log('[IDENTIFY API] Removed data URL prefix, new length:', imageBase64.length)
+      const semiIndex = imageBase64.indexOf(';')
+      const commaIndex = imageBase64.indexOf(',')
+      if (semiIndex !== -1 && commaIndex !== -1) {
+        mimeType = imageBase64.substring(5, semiIndex) // between "data:" and ";"
+        pureBase64 = imageBase64.substring(commaIndex + 1)
       }
     }
+    // Use Node.js Buffer to decode base64 → bytes (what AI SDK v6 expects)
+    const imageBuffer = Buffer.from(pureBase64, 'base64')
+    console.log('[IDENTIFY API] Image ready — mime:', mimeType, 'bytes:', imageBuffer.length)
 
     // Validate API key
     if (!process.env.OPENAI_API_KEY) {
@@ -73,7 +79,8 @@ export async function POST(request: Request) {
             },
             {
               type: 'image',
-              image: imageBase64,
+              image: imageBuffer,
+              mediaType: mimeType,
             },
           ],
         },
