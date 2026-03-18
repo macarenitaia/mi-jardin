@@ -1,4 +1,4 @@
-import { streamText, tool } from 'ai'
+import { streamText, tool, convertToModelMessages } from 'ai'
 import { openai, MODELS } from '@/lib/ai/openrouter'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
@@ -25,24 +25,30 @@ export async function POST(request: Request) {
   try {
     console.log('[JARDINERO API] Request received')
     const body: unknown = await request.json()
-    const { messages, userId } = body as { messages?: unknown[]; userId?: string }
+    // In AI SDK v6, DefaultChatTransport sends: { messages: UIMessage[], id?: string, ...extraBody }
+    const { messages: uiMessages, userId } = body as { messages?: unknown[]; userId?: string }
 
     if (!userId) {
       return Response.json({ error: 'userId es requerido' }, { status: 400 })
     }
 
-    if (!messages || !Array.isArray(messages)) {
+    if (!uiMessages || !Array.isArray(uiMessages)) {
       return Response.json({ error: 'messages es requerido' }, { status: 400 })
     }
 
-    console.log('[JARDINERO API] User:', userId, 'Messages:', messages.length)
+    console.log('[JARDINERO API] User:', userId, 'Messages:', uiMessages.length)
 
     const supabase = await createClient()
+
+    // Convert v6 UIMessages to CoreMessages that streamText understands
+    const messages = await convertToModelMessages(
+      uiMessages as Parameters<typeof convertToModelMessages>[0]
+    )
 
     const result = streamText({
       model: openai(MODELS.chat),
       system: SYSTEM_PROMPT,
-      messages: messages as any,
+      messages,
       tools: {
         getMyPlants: tool({
           description:
@@ -178,7 +184,7 @@ export async function POST(request: Request) {
       },
     })
 
-    return result.toTextStreamResponse()
+    return result.toUIMessageStreamResponse()
   } catch (error) {
     console.error('[JARDINERO API] Error:', error)
     return Response.json(
